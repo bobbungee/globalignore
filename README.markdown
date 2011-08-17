@@ -1,6 +1,7 @@
 # Github Gitignore Compiler
 
 Compiles your choice of [Github gitignores](https://github.com/github/gitignore)
+to be used by git as a global gitignore
 
 ## Instructions
 
@@ -16,6 +17,10 @@ Compiles your choice of [Github gitignores](https://github.com/github/gitignore)
 
         cd globalignore
         ./globalignore
+
+4. Tell git to use the generated file as a global gitignore
+
+        git config --global core.excludesfile ~/.globalignore
 
 ## Sample Usage
 
