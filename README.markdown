@@ -29,3 +29,4 @@ Compiles your choice of [Github gitignores](https://github.com/github/gitignore)
     Java
     Rails
     OSX
+    done
