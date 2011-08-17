@@ -1,0 +1,62 @@
+#!/usr/bin/env ruby
+
+require 'fileutils'
+
+# Variables
+GLOBAL_IGNORE = '.globalignore'
+gitignores = []
+
+# Methods
+def ci_glob(filename)
+  glob = ''
+  filename.each_char do |c|
+    glob += c.downcase != c.upcase ? "[#{c.downcase}#{c.upcase}]" : c
+  end
+  glob
+end
+
+# cd home and get gitignores dir
+puts "Enter the path to the gitignores:"
+ignoresdir = gets.chomp
+Dir.chdir(File.expand_path(ignoresdir))
+
+# Prompt for gitignores
+puts "\nEnter the gitignores you want, one per line (e.g. Java).\nType 'done' when done"
+while true do
+  input = gets.chomp
+  
+  if input.downcase == "done"
+    break
+  else
+    gitignores << input
+  end
+end
+
+# Delete file if exists
+File.delete GLOBAL_IGNORE if File.file? GLOBAL_IGNORE
+
+# ignores directory
+current_dir = Dir.pwd
+
+File.open(GLOBAL_IGNORE, 'w') do |file|
+  gitignores.each do |ignore|
+    Dir.chdir(current_dir)
+    filename = Dir.glob(ci_glob("#{ignore}.gitignore")).first.to_s
+    unless File.file? filename
+      Dir.chdir("Global")
+      filename = Dir.glob(ci_glob("#{ignore}.gitignore")).first.to_s
+    end
+    
+    if File.file? filename
+      file.puts("\n# #{ignore}\n")
+      
+      # Write gitignore to globalignore
+      contents = IO.read(filename)
+      file.write("#{contents}\n")
+    end
+  end
+end
+
+# Move globalignore to home directory
+File.delete "#{Dir.home}/#{GLOBAL_IGNORE}" if File.file? "#{Dir.home}/#{GLOBAL_IGNORE}"
+FileUtils.mv("#{current_dir}/#{GLOBAL_IGNORE}", "#{Dir.home}/#{GLOBAL_IGNORE}")
